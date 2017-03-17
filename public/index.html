@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Whether Weather</title>
+    <link href="http://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet" type="text/css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <link href="/public/css/style.css" rel="stylesheet" type="text/css">
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/public/css/mdb.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/bower_components/weather-icons/css/weather-icons.min.css">
+</head>
+
+<body>
+    <!--Mask-->
+    <div class="view hm-black-strong">
+        <div class="full-bg-img flex-center">
+            <div class="row">
+                <ul>
+                    <li>
+                        <h1 class="h1-responsive">Whither Weather</h1></li>
+                    <li>
+                        <h3 class="h3-responsive">Your Friendly Neighborhood Weather App</h3>
+                    </li>
+                        <li><i id="icon-graphic" class="wi"></i></li>
+                        <li id="weather-city"></li>
+                        <li id="weather-temp"></li>
+                        <li id="weather-desc"></li>
+                        <li id="weather-image"></li>
+                </ul>
+            </div>
+         </div>
+    </div>
+    <!--/.Mask-->
+    <!-- SCRIPTS -->
+    <!-- JQuery -->
+    <script type="text/javascript" src="/public/js/jquery-2.2.3.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="/public/js/tether.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="/public/js/mdb.min.js"></script>
+    <!-- <script type="text/javascript" src="/controllers/clickController.client.js"></script> -->
+    <script type="text/javascript" src="/controllers/getWeatherController.client.js"></script>
+</body>
+
+</html>

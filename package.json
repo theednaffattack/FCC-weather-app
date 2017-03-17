@@ -1,0 +1,56 @@
+{
+  "name": "clementinejs",
+  "version": "1.0.2",
+  "description": "A light-weight MEAN stack boilerplate.",
+  "main": "server.js",
+  "scripts": {
+    "start": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnstonbl01/clementinejs"
+  },
+  "homepage": "http://johnstonbl01.github.io/clementinejs/",
+  "bugs": "https://github.com/johnstonbl01/clementinejs/issues",
+  "keywords": [
+    "MEAN",
+    "MongoDB",
+    "Express",
+    "Angular",
+    "Node",
+    "javascript",
+    "boilerplate"
+  ],
+  "author": "Blake Johnston",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.3",
+    "gulp": "^3.9.1",
+    "mongodb": "^2.0.42"
+  },
+  "devDependencies": {
+    "browserify": "^12.0.1",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-clean-css": "^3.0.3",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.0.0",
+    "gulp-file": "^0.3.0",
+    "gulp-inject": "^4.2.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-minify": "0.0.15",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.1.0",
+    "gulp-util": "^3.0.8",
+    "lodash": "^4.17.4",
+    "node-notifier": "^4.4.0",
+    "postcss-uncss": "^0.14.0",
+    "reactify": "^1.1.1",
+    "require-dir": "^0.3.1",
+    "uncss": "^0.14.1",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.6.1",
+    "wiredep": "^4.0.0"
+  }
+}
