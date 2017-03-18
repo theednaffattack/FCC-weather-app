@@ -7,12 +7,18 @@
 	<p id="startLon"></p>
 	<p id="error-msg"></p>
 	<p id="city-name"></p>
-	<p id="weather-tempF"></p>
-	<p id="weather-tempF-min"></p>
-	<p id="weather-tempF-max"></p>
+	<p>Current temperature: <span id="weather-temp"></span><input type="button" id="1" value="C" style="color:blue"
+       onclick="toggle(this);"></p>
+	<p>Low temperature: <span id="weather-temp-min"></span></p>
+	<p>High temperature: <span id="weather-temp-max""></span></p>
 	<p id="iconGraphic" class="wi"></p>
-	<pre id="weather-object"></pre>
+	<!-- <pre id="weather-object"></pre> -->
 		<script>
+			// var toggleClass = 1;
+			// var toggleValue;
+			var rawTempGlbl;
+			var tempGlbl;
+
 			// check for Geolocation support
 			if (navigator.geolocation) {
 			  console.log('Geolocation is supported!');
@@ -22,10 +28,10 @@
 			}
 
 			var cityName = document.getElementById('city-name');
-			var weatherObject = document.getElementById('weather-object');
-			var weatherTempF = document.getElementById('weather-tempF');
-			var weatherTempFMax = document.getElementById('weather-tempF-max');
-			var weatherTempFMin = document.getElementById('weather-tempF-min');;
+			// var weatherObject = document.getElementById('weather-object');
+			var weatherTemp = document.getElementById('weather-temp');
+			var weatherTempMax = document.getElementById('weather-temp-max');
+			var weatherTempMin = document.getElementById('weather-temp-min');;
 
 			var weatherIcons;
 
@@ -54,6 +60,18 @@
 			    xmlhttp.send();
 			}
 
+
+			// Toggles the passed button from OFF to ON and vice-versa.
+			function toggle(button, rawTempGlbl) {
+			  if (button.value == "F") {
+			    convertTemp("F");
+			    button.value = "C";
+			  } else {
+			    convertTemp("C");
+			    button.value = "F";
+			  }
+			}
+
 			// geoLookup function to find the city
 			function getCityName(data) {
 
@@ -61,6 +79,38 @@
 			    var city = cityObject.results[0].address_components[3].long_name;
 
 			        cityName.innerHTML = city;
+			}
+
+			function convertTemp(units) {
+				var getUnits = units;
+				var newTemp;
+				var tempStep;
+				// var rawTempMin = tempObject.main.temp_min;
+				// var rawTempMax = tempObject.main.temp_max;
+
+				if (getUnits == 'F') {
+					//do stuff
+					newTemp = Math.round(rawTempGlbl * (9 / 5) - 459.67);
+					newTempMax = Math.round(rawTempMaxGlbl * (9 / 5) - 459.67);
+					newTempMin = Math.round(rawTempMinGlbl * (9 / 5) - 459.67);
+
+				    weatherTemp.innerHTML = newTemp + '&deg; F';
+				    weatherTempMax.innerHTML = newTempMax + '&deg; F';
+				    weatherTempMin.innerHTML = newTempMin + '&deg; F';
+				} else {
+					//do other stuff
+					tempStep = Math.round(rawTempGlbl * 100) / 100;
+					tempStepMax = Math.round(rawTempMaxGlbl * 100) / 100;
+					tempStepMin = Math.round(rawTempMinGlbl * 100) / 100;
+
+					newTemp = Math.round( (tempStep - 273.15) * 100 ) / 100;
+					newTempMax = Math.round( (tempStepMax - 273.15) * 100 ) / 100;
+					newTempMin = Math.round( (tempStepMin - 273.15) * 100 ) / 100;
+					
+				    weatherTemp.innerHTML = newTemp + '&deg; C';
+				    weatherTempMax.innerHTML = newTempMax + '&deg; C';
+				    weatherTempMin.innerHTML = newTempMin + '&deg; C';
+				}
 			}
 
 			function getLocalWeather(data) {
@@ -71,10 +121,14 @@
 			    var prefix = 'wi-';
 			    var code = weatherObjectData.weather[0].id;
 			    var icon = weatherIcons[code].icon;
-			    var tempF = Math.round(weatherObjectData.main.temp * (9 / 5) - 459.67);
-			    var tempFMax = Math.round(weatherObjectData.main.temp_max * (9 / 5) - 459.67);
-			    var tempFMin = Math.round(weatherObjectData.main.temp_min * (9 / 5) - 459.67);
-			    var tempC = weatherObjectData.main.temp - 273.15;
+
+			    rawTempGlbl = weatherObjectData.main.temp;
+			    rawTempMaxGlbl = weatherObjectData.main.temp_max;
+			    rawTempMinGlbl = weatherObjectData.main.temp_min;
+
+			    convertTemp('F');  // initialize the weather app with fahrenheit units aka 'F'
+
+			    console.log('rawTempGlbl set inside getLocalWeather ' + rawTempGlbl);
 
 			    // If we are not in the ranges mentioned above, add a day/night prefix.
 			    if (!(code > 699 && code < 800) && !(code > 899 && code < 1000)) {
@@ -83,14 +137,6 @@
 
 			    // Finally tack on the prefix.
 			    icon = prefix + icon;
-
-			    // weatherCity.innerHTML = weatherObject.name;
-			    weatherTempF.innerHTML = tempF + '&deg;';
-			    weatherTempFMax.innerHTML = tempFMax + '&deg;';
-			    weatherTempFMin.innerHTML = tempFMin + '&deg;';
-			    // weatherTempC.innerHTML = tempC;
-			    // weatherImage.innerHTML = weatherObject;
-			    weatherObject.innerHTML = JSON.stringify(weatherObjectData, null, 4);
 
 			    iconGraphic.classList.add(icon);
 			}
@@ -105,11 +151,8 @@
 			    userLong = longValue;
 
 			    var jsonFileLoc = '/app/icon_data/weather-icons.json';
-
-
 			     
 			    var weatherApiUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + userLat + '&lon=' + userLong + '&appid=ea980062829f19db9775cd9d13540204';
-			    
 
 			    var latMsg = 'Starting Lat: ' + latValue; // Math.round(latValue * 100) / 100; // round to two decimals
 			    var lonMsg = 'Starting Lon: ' + longValue; // Math.round(longValue * 100) / 100;
@@ -122,7 +165,6 @@
 			    ajaxRequest('GET', weatherApiUrl, getLocalWeather);
 			  };
 
-
 			  var geoError = function(error) {
 			    console.log('Error occurred. Error code: ' + error.code);
 			    document.getElementById('error-msg').innerHTML = error.code;
@@ -133,10 +175,10 @@
 			    //   3: timed out
 			  };
 			  navigator.geolocation.getCurrentPosition(geoSuccess);
-			  // ajaxRequest('GET', geoLookupApiPartial + userLat + userLong + geoLookupApiKey, getCityName);
-
 
 			};
+		</script>
+		<script>
 		</script>
 	</body>
 </html>
