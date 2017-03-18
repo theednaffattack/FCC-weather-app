@@ -2,13 +2,6 @@
 
 (function() {
 
-
-    var weatherInfo = document.querySelector('#weather-info');
-    var weatherCity = document.querySelector('#weather-city');
-    var weatherTempF = document.querySelector('#weather-temp');
-    var weatherDesc = document.querySelector('#weather-desc');
-    var weatherImage = document.querySelector('#weather-image');
-    var iconGraphic = document.querySelector('#icon-graphic');
     var cityName = document.querySelector('#city-name');
 
     var userLocation = navigator.geolocation;
@@ -21,27 +14,15 @@
     // https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyAwkBM4FYaENbyryxmCh732C7OJg3JS7h0
 
     // get the user's current location
-    // if (navigator.geolocation) {
-    //      navigator.geolocation.getCurrentPosition(function(position) {
-    //     userLat = position.coords.latitude; //$("#data").html("latitude: " + position.coords.latitude + "<br>longitude: " + position.coords.longitude);
-    //     userLong = position.coords.longitude;
-    //   });
-    // }
-
-    var weatherApiUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + userLat + '&lon=' + userLong + '&appid=ea980062829f19db9775cd9d13540204';
-
-
     if (userLocation) {
         userLocation.getCurrentPosition(function(position) {
             userLat = position.coords.latitude;
             userLong = position.coords.longitude;
-            console.log('Lat: ' + userLat + ' long: ' + userLong);
-
-            cityName.innerHTML = city;
+             var geoLookupApiUrl = geoLookupApiPartial + userLat + ',' + userLong + '&key=' + geoLookupApiKey;
+            console.log('Lat: ' + userLat + ' long: ' + userLong +  ' ' + geoLookupApiUrl);
         });
     }
 
-    var geoLookupApiUrl = geoLookupApiPartial + userLat + ',' + userLong + '&key=' + geoLookupApiKey;
 
 
     function ready(fn) {
@@ -77,6 +58,8 @@
         var city = cityObject.results[0].address_components[3].long_name;
 
 
+            cityName.innerHTML = city;
+
     }
 
     function getLocalWeather(data) {
@@ -107,7 +90,7 @@
 
         iconGraphic.classList.add(icon);
     }
-    
+
     ready(ajaxRequest('GET', geoLookupApiUrl, getCityName))
         // ready(ajaxRequest('GET', weatherApiUrl, getLocalWeather))
 

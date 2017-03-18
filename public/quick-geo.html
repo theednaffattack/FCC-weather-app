@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css">
+	</head>
+	<body>
+	<p id="startLat"></p>
+	<p id="startLon"></p>
+	<p id="error-msg"></p>
+	<p id="city-name"></p>
+	<p id="weather-tempF"></p>
+	<p id="weather-tempF-min"></p>
+	<p id="weather-tempF-max"></p>
+	<p id="iconGraphic" class="wi"></p>
+	<pre id="weather-object"></pre>
+		<script>
+			// check for Geolocation support
+			if (navigator.geolocation) {
+			  console.log('Geolocation is supported!');
+			}
+			else {
+			  console.log('Geolocation is not supported for this Browser/OS.');
+			}
+
+			var cityName = document.getElementById('city-name');
+			var weatherObject = document.getElementById('weather-object');
+			var weatherTempF = document.getElementById('weather-tempF');
+			var weatherTempFMax = document.getElementById('weather-tempF-max');
+			var weatherTempFMin = document.getElementById('weather-tempF-min');;
+
+			var weatherIcons;
+
+		    var weatherApiPartial = 'http://api.openweathermap.org/data/2.5/weather?lat=';
+		    var geoLookupApiPartial = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
+		    var geoLookupApiKey = 'AIzaSyAwkBM4FYaENbyryxmCh732C7OJg3JS7h0';
+		    var sampleUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=37.7748681,-122.45592429999999&AIzaSyAwkBM4FYaENbyryxmCh732C7OJg3JS7h0';
+
+		    var userLat;
+		    var userLong;
+
+		    function loadJSON(data) {   
+		    	weatherIcons = JSON.parse(data);  
+		     }
+
+			function ajaxRequest(method, url, callback) {
+			    var xmlhttp = new XMLHttpRequest();
+
+			    xmlhttp.onreadystatechange = function() {
+			        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+			            callback(xmlhttp.response);
+			        }
+			    };
+
+			    xmlhttp.open(method, url, true);
+			    xmlhttp.send();
+			}
+
+			// geoLookup function to find the city
+			function getCityName(data) {
+
+			    var cityObject = JSON.parse(data);
+			    var city = cityObject.results[0].address_components[3].long_name;
+
+			        cityName.innerHTML = city;
+			}
+
+			function getLocalWeather(data) {
+			    // do stuff
+			    var weatherObjectData = JSON.parse(data);
+
+			    // add weather icons
+			    var prefix = 'wi-';
+			    var code = weatherObjectData.weather[0].id;
+			    var icon = weatherIcons[code].icon;
+			    var tempF = Math.round(weatherObjectData.main.temp * (9 / 5) - 459.67);
+			    var tempFMax = Math.round(weatherObjectData.main.temp_max * (9 / 5) - 459.67);
+			    var tempFMin = Math.round(weatherObjectData.main.temp_min * (9 / 5) - 459.67);
+			    var tempC = weatherObjectData.main.temp - 273.15;
+
+			    // If we are not in the ranges mentioned above, add a day/night prefix.
+			    if (!(code > 699 && code < 800) && !(code > 899 && code < 1000)) {
+			        icon = 'day-' + icon;
+			    }
+
+			    // Finally tack on the prefix.
+			    icon = prefix + icon;
+
+			    // weatherCity.innerHTML = weatherObject.name;
+			    weatherTempF.innerHTML = tempF + '&deg;';
+			    weatherTempFMax.innerHTML = tempFMax + '&deg;';
+			    weatherTempFMin.innerHTML = tempFMin + '&deg;';
+			    // weatherTempC.innerHTML = tempC;
+			    // weatherImage.innerHTML = weatherObject;
+			    weatherObject.innerHTML = JSON.stringify(weatherObjectData, null, 4);
+
+			    iconGraphic.classList.add(icon);
+			}
+
+			window.onload = function() {
+			  var startPos;
+			  var geoSuccess = function(position) {
+			    startPos = position;
+			    var latValue = startPos.coords.latitude;
+			    var longValue = startPos.coords.longitude;
+			    userLat = latValue;
+			    userLong = longValue;
+
+			    var jsonFileLoc = '/app/icon_data/weather-icons.json';
+
+
+			     
+			    var weatherApiUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + userLat + '&lon=' + userLong + '&appid=ea980062829f19db9775cd9d13540204';
+			    
+
+			    var latMsg = 'Starting Lat: ' + latValue; // Math.round(latValue * 100) / 100; // round to two decimals
+			    var lonMsg = 'Starting Lon: ' + longValue; // Math.round(longValue * 100) / 100;
+
+			    document.getElementById('startLat').innerHTML = latMsg;
+			    document.getElementById('startLon').innerHTML = lonMsg;
+			    console.log('Success! Geolocation data added to DOM.');
+			    ajaxRequest('GET', jsonFileLoc, loadJSON);
+			    ajaxRequest('GET', geoLookupApiPartial + userLat + ',' + userLong + '&' + geoLookupApiKey, getCityName);
+			    ajaxRequest('GET', weatherApiUrl, getLocalWeather);
+			  };
+
+
+			  var geoError = function(error) {
+			    console.log('Error occurred. Error code: ' + error.code);
+			    document.getElementById('error-msg').innerHTML = error.code;
+			    // error.code can be:
+			    //   0: unknown error
+			    //   1: permission denied
+			    //   2: position unavailable (error response from location provider)
+			    //   3: timed out
+			  };
+			  navigator.geolocation.getCurrentPosition(geoSuccess);
+			  // ajaxRequest('GET', geoLookupApiPartial + userLat + userLong + geoLookupApiKey, getCityName);
+
+
+			};
+		</script>
+	</body>
+</html>

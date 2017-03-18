@@ -17,6 +17,7 @@ mongo.connect('mongodb://localhost:27017/clementinejs', function (err, db) {
    app.use('/public', express.static(process.cwd() + '/public'));
    app.use('/controllers', express.static(process.cwd() + '/app/controllers'));
    app.use('/bower_components', express.static(process.cwd() + '/bower_components'));
+   app.use('/app', express.static(process.cwd() + '/app'));
 
    routes(app, db);
 
