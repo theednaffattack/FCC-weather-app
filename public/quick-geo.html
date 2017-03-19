@@ -1,17 +1,26 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.css">
 	</head>
 	<body>
-	<p id="startLat"></p>
-	<p id="startLon"></p>
-	<p id="error-msg"></p>
-	<p id="city-name"></p>
-	<p>Current temperature: <span id="weather-temp"></span><input type="button" id="1" value="C" style="color:blue"
-       onclick="toggle(this);"></p>
-	<p>Low temperature: <span id="weather-temp-min"></span></p>
-	<p>High temperature: <span id="weather-temp-max""></span></p>
-	<p id="iconGraphic" class="wi"></p>
+		<div class="container">
+			
+			<div class="jumbotron">
+				<p>From navigator.geoLocation:</p>
+				<p id="startLat"></p>
+				<p id="startLon"></p>
+				<p id="error-msg"></p>
+				<p>From Google API:</p>
+				<p id="city-name"></p>
+				<p>From openweather:</p>
+				<p>Current temperature: <span id="weather-temp"></span><input type="button" id="1" value="C" style="color:blue"
+				       onclick="toggle(this);"></p>
+				<p>Low temperature: <span id="weather-temp-min"></span></p>
+				<p>High temperature: <span id="weather-temp-max""></span></p>
+				<p id="iconGraphic" class="wi"></p>
+			</div>
+		</div>
 	<!-- <pre id="weather-object"></pre> -->
 		<script>
 			// var toggleClass = 1;
@@ -128,7 +137,7 @@
 
 			    convertTemp('F');  // initialize the weather app with fahrenheit units aka 'F'
 
-			    console.log('rawTempGlbl set inside getLocalWeather ' + rawTempGlbl);
+			    console.log('rawTempGlbl set inside getLocalWeather: ' + rawTempGlbl + ' degrees Kelvin');
 
 			    // If we are not in the ranges mentioned above, add a day/night prefix.
 			    if (!(code > 699 && code < 800) && !(code > 899 && code < 1000)) {
