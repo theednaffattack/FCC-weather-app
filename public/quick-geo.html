@@ -1,31 +1,34 @@
 <html>
-	<head>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.css">
-	</head>
-	<body>
-		<div class="container">
-			
-			<div class="jumbotron">
-				<p>From navigator.geoLocation:</p>
-				<p id="startLat"></p>
-				<p id="startLon"></p>
-				<p id="error-msg"></p>
-				<p>From Google API:</p>
-				<p id="city-name"></p>
-				<p>From openweather:</p>
-				<p>Current temperature: <span id="weather-temp"></span><input type="button" id="1" value="C" style="color:blue"
-				       onclick="toggle(this);"></p>
-				<p>Low temperature: <span id="weather-temp-min"></span></p>
-				<p>High temperature: <span id="weather-temp-max""></span></p>
-				<p id="iconGraphic" class="wi"></p>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <ul class="text-center list-inline">
+                <li class="list-inline-item"><h1 id="city-name"></h1></li>
+                <li class="list-inline-item"><i id="iconGraphic" class="wi" style="font-size: 3em; color: #924da3;"></i></li>
+            </ul>
+            <ul class="text-center list-inline">
+                <li class="list-inline-item"><span id="weather-temp"></span>&nbsp;
+                    <input class="btn btn-warning" type="button" id="1" value="C" style="color: #924da3" onclick="toggle(this);">
+                </li>
+            </ul>
+            <ul class="text-center list-inline">
+                <li class="list-inline-item"><span id="weather-temp-min"></span></li>
+                <li class="list-inline-item"><span id="weather-temp-max" "></span></li>
+			</ul>
+			<p class="text-center" id="wind-speed"></p>
 			</div>
 		</div>
-	<!-- <pre id="weather-object"></pre> -->
 		<script>
-			// var toggleClass = 1;
-			// var toggleValue;
 			var rawTempGlbl;
+			var rawTempMaxGlbl
+			var rawTempMinGlbl
+
 			var tempGlbl;
 
 			// check for Geolocation support
@@ -37,10 +40,10 @@
 			}
 
 			var cityName = document.getElementById('city-name');
-			// var weatherObject = document.getElementById('weather-object');
 			var weatherTemp = document.getElementById('weather-temp');
 			var weatherTempMax = document.getElementById('weather-temp-max');
 			var weatherTempMin = document.getElementById('weather-temp-min');;
+			var windSpeed = document.getElementById('wind-speed');;
 
 			var weatherIcons;
 
@@ -49,8 +52,9 @@
 		    var geoLookupApiKey = 'AIzaSyAwkBM4FYaENbyryxmCh732C7OJg3JS7h0';
 		    var sampleUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=37.7748681,-122.45592429999999&AIzaSyAwkBM4FYaENbyryxmCh732C7OJg3JS7h0';
 
-		    var userLat;
-		    var userLong;
+		    var userLat = '';
+		    var userLong = '';
+		    var userCity = '';
 
 		    function loadJSON(data) {   
 		    	weatherIcons = JSON.parse(data);  
@@ -81,7 +85,7 @@
 			  }
 			}
 
-			// geoLookup function to find the city
+			// geoLookup function to find the city via Google
 			function getCityName(data) {
 
 			    var cityObject = JSON.parse(data);
@@ -130,10 +134,14 @@
 			    var prefix = 'wi-';
 			    var code = weatherObjectData.weather[0].id;
 			    var icon = weatherIcons[code].icon;
+			    var desc = weatherObjectData.weather[0].description;
+			    var windSpeedData = weatherObjectData.wind.speed;
 
 			    rawTempGlbl = weatherObjectData.main.temp;
 			    rawTempMaxGlbl = weatherObjectData.main.temp_max;
 			    rawTempMinGlbl = weatherObjectData.main.temp_min;
+
+			    windSpeed.innerHTML = windSpeedData + ' (mph)';
 
 			    convertTemp('F');  // initialize the weather app with fahrenheit units aka 'F'
 
@@ -148,30 +156,52 @@
 			    icon = prefix + icon;
 
 			    iconGraphic.classList.add(icon);
+				console.log('getLocalWeather finished executing!')
+
+			}
+
+			function getUserLocData(data) {
+				// do stuff
+				var locData = JSON.parse(data);
+				// console.log('locData = ' + JSON.stringify(locData, null, 4));
+				console.log('locData.latitude = ' + locData.latitude);
+				userLat = locData.latitude;
+				console.log('userLat = ' + userLat);
+				userLong = locData.longitude;
+				cityName.innerHTML = locData.city;
+				console.log('locData.city = ' + locData.city);
+				console.log('getUserLocData finished executing!');
+
+			    var weatherApiUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + userLat + '&lon=' + userLong + '&appid=ea980062829f19db9775cd9d13540204';
+
+			    ajaxRequest('GET', weatherApiUrl, getLocalWeather);
+			    console.log('ajax Weather Request completed!')
+
 			}
 
 			window.onload = function() {
 			  var startPos;
 			  var geoSuccess = function(position) {
 			    startPos = position;
-			    var latValue = startPos.coords.latitude;
-			    var longValue = startPos.coords.longitude;
-			    userLat = latValue;
-			    userLong = longValue;
+			    // var latValue = startPos.coords.latitude;
+			    // var longValue = startPos.coords.longitude;
+			    // userLat = latValue;
+			    // userLong = longValue;
 
 			    var jsonFileLoc = '/app/icon_data/weather-icons.json';
 			     
-			    var weatherApiUrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + userLat + '&lon=' + userLong + '&appid=ea980062829f19db9775cd9d13540204';
 
-			    var latMsg = 'Starting Lat: ' + latValue; // Math.round(latValue * 100) / 100; // round to two decimals
-			    var lonMsg = 'Starting Lon: ' + longValue; // Math.round(longValue * 100) / 100;
+			    var getLocationInfo = 'http://freegeoip.net/json/';
 
-			    document.getElementById('startLat').innerHTML = latMsg;
-			    document.getElementById('startLon').innerHTML = lonMsg;
+			    // var latMsg = 'Starting Lat: ' + latValue; // Math.round(latValue * 100) / 100; // round to two decimals
+			    // var lonMsg = 'Starting Lon: ' + longValue; // Math.round(longValue * 100) / 100;
+
+			    // document.getElementById('startLat').innerHTML = latMsg;
+			    // document.getElementById('startLon').innerHTML = lonMsg;
 			    console.log('Success! Geolocation data added to DOM.');
+			    ajaxRequest('GET', getLocationInfo, getUserLocData);
 			    ajaxRequest('GET', jsonFileLoc, loadJSON);
-			    ajaxRequest('GET', geoLookupApiPartial + userLat + ',' + userLong + '&' + geoLookupApiKey, getCityName);
-			    ajaxRequest('GET', weatherApiUrl, getLocalWeather);
+			    // ajaxRequest('GET', geoLookupApiPartial + userLat + ',' + userLong + '&' + geoLookupApiKey, getCityName);
 			  };
 
 			  var geoError = function(error) {
@@ -183,11 +213,8 @@
 			    //   2: position unavailable (error response from location provider)
 			    //   3: timed out
 			  };
-			  navigator.geolocation.getCurrentPosition(geoSuccess);
-
+				geoSuccess();
 			};
-		</script>
-		<script>
 		</script>
 	</body>
 </html>

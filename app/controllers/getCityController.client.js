@@ -8,6 +8,8 @@
     var userLat = '';
     var userLong = '';
     var weatherApiPartial = 'http://api.openweathermap.org/data/2.5/weather?lat=';
+    var darkSkyApiKey = '12885c7c505fd5f2e1bb67fb9ac6087d';
+    var darkSkyApiPartial = 'https://api.darksky.net/forecast/' + darkSkyApiKey + '/37.8267,-122.4233';
     var geoLookupApiPartial = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
     var geoLookupApiKey = 'AIzaSyAwkBM4FYaENbyryxmCh732C7OJg3JS7h0';
     // Google Sample API Call:
